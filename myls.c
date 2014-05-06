@@ -43,10 +43,21 @@ void fname(const char *dir_name)
 {
 	DIR *p_dir;
 	struct dirent *p_dirent;
-	printf("%s\n",dir_name);
 	if ((p_dir = opendir(dir_name)) == NULL) {
 		printf("opendir(%s) failed\n",dir_name);
 		return;
 	}
+
+	while ((p_dirent = readdir(p_dir)) != NULL) {
+		char *str_path = p_dirent->d_name;	// relative path name!
+
+		if (str_path == NULL) {
+			printf("Null pointer found!"); 
+			return;
+		} else {
+			printf("%s\n", str_path);
+		}
+	}
+	return;
 
 }
