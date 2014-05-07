@@ -12,12 +12,13 @@
 #define STRLEN1 128
 #define STRLEN2 64
 
-void process(const char *dir_name);
+void process(const char *dir_name, const char *type);
 void fperm(char *dir_name);
 char *ftype(char *dir_name);
 char *getUserName(char *dir_name);
 char *getGroupName(char *dir_name);
 int getSize(char *dir_name);
+void getTime(char *dir_name, const char *type);
 
 int main (int argc, char *argv[]) 
 {
@@ -37,14 +38,13 @@ int main (int argc, char *argv[])
 		printf("Usage: <arguments> <directory> \n");
 		return 0; 
 	}
-
-	printf("Proper arguments passed. \n");
-	process(argv[2]);
+	char *type = argv[1];
+	process(argv[2], type);
 
 	return 0; 
 }
 
-void process(const char *dir_name)
+void process(const char *dir_name, const char *type)
 {
 	DIR *p_dir;
 	char *temp;
@@ -67,10 +67,11 @@ void process(const char *dir_name)
 			char *type = ftype(temp);
 			printf("%c",type[0]);
 			fperm(temp);
-			printf(" %s ",str_path);
-			printf(" %s ",getUserName(temp));
-			printf(" %s ",getGroupName(temp));
-			printf(" %d \n",getSize(temp));
+			printf("\t %s ",getUserName(temp));
+			printf("\t %s ",getGroupName(temp));
+			printf("\t %d ",getSize(temp));
+			getTime(temp,type);
+			printf("\t %s \n",str_path);
 		}
 	}
 	free(temp);
@@ -147,4 +148,22 @@ int getSize(char *dir_name)
 		perror("lstat error");
 	}
 	return file.st_size;
+}
+void getTime(char *dir_name, const char *type)
+{	
+	struct stat file;
+	struct tm *timeinfo; 
+	char buffer[256];
+	if (lstat(dir_name, &file) < 0){
+		perror("lstat error");
+		return;
+	}
+	if 		(!strcmp(&type[1],"l"))	timeinfo = localtime(&file.st_mtime);
+	else if (!strcmp(&type[1],"u")) timeinfo = localtime(&file.st_atime);
+	else if (!strcmp(&type[1],"c")) timeinfo = localtime(&file.st_ctime);
+	else						    timeinfo = localtime(&file.st_mtime);
+
+	strftime(buffer,80,"%a %b %d %I:%M",timeinfo);
+	printf("\t %s ",buffer);
+	return;
 }
