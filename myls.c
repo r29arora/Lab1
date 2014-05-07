@@ -22,11 +22,6 @@ void getTime(char *dir_name, const char *type);
 
 int main (int argc, char *argv[]) 
 {
-	// Print out argc and arg[v] (to use for debugging)
-	/*printf("Argc: %d \n Argv: \n", argc);
-	for (int x=0;x<argc;x++){
-		printf(" %s \n", argv[x]);	}*/
-
 	/*	
 		desired argv[] paramters
 		argv[0] -> command   (ex. ./myls.out)
@@ -129,6 +124,7 @@ char *getUserName(char *dir_name)
 	//printf(" %s ",temp);
 	return temp;
 } 
+
 char *getGroupName(char *dir_name)
 {
 	struct stat file;
@@ -149,6 +145,7 @@ int getSize(char *dir_name)
 	}
 	return file.st_size;
 }
+
 void getTime(char *dir_name, const char *type)
 {	
 	struct stat file;
@@ -163,7 +160,7 @@ void getTime(char *dir_name, const char *type)
 	else if (!strcmp(&type[1],"c")) timeinfo = localtime(&file.st_ctime);
 	else						    timeinfo = localtime(&file.st_mtime);
 
-	strftime(buffer,80,"%a %b %d %I:%M",timeinfo);
+	strftime(buffer,80,"%a %b %d %Y %I:%M",timeinfo);
 	printf("\t %s ",buffer);
 	return;
 }
