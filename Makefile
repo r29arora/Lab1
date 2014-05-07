@@ -9,7 +9,7 @@ LDFLAGS=-g
 
 OBJS=myls.o
 
-all: myls.out
+all: myls
 
 myls.out: $(OBJS) 
 	$(LD) $(LDFLAGS) -o $@ $^
@@ -19,4 +19,4 @@ myls.out: $(OBJS)
 
 .PHONY: clean
 clean:
-	rm -f *.o *.out 
+	rm -f *.o *.out myls 
