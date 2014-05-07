@@ -13,6 +13,7 @@
 #define STRLEN2 64
 
 void fname(const char *dir_name);
+void fperm(char *dir_name, int len);
 
 int main (int argc, char *argv[]) 
 {
@@ -35,7 +36,8 @@ int main (int argc, char *argv[])
 	}
 
 	printf("Proper arguments passed. \n");
-	fname(argv[2]);
+	//fname(argv[2]);
+	fperm(argv[2],argc);
 	return 0; 
 }
 
@@ -59,5 +61,26 @@ void fname(const char *dir_name)
 		}
 	}
 	return;
+}
+
+void fperm(char *dir_name, int len) 
+{
+	char str[] = "---\0";
+	struct stat buf;
+	
+	printf("Owner permission of %s: ", dir_name);
+	if (lstat(dir_name, &buf) < 0) {
+		perror("lstat error");
+		return;
+	}   
+
+	mode_t mode = buf.st_mode;
+
+	str[0] = (mode & S_IRUSR) ? 'r' : '-';
+	str[1] = (mode & S_IWUSR) ? 'w' : '-';
+	str[2] = (mode & S_IXUSR) ? 'x' : '-';	// assume no sticky bit 
+
+	printf("%s\n", str);
+
 
 }
