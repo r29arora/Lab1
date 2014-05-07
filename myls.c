@@ -17,6 +17,7 @@ void fperm(char *dir_name);
 char *ftype(char *dir_name);
 char *getUserName(char *dir_name);
 char *getGroupName(char *dir_name);
+int getSize(char *dir_name);
 
 int main (int argc, char *argv[]) 
 {
@@ -67,7 +68,9 @@ void process(const char *dir_name)
 			printf("%c",type[0]);
 			fperm(temp);
 			printf(" %s ",str_path);
-			printf("%s \n",getUserName(temp));
+			printf(" %s ",getUserName(temp));
+			printf(" %s ",getGroupName(temp));
+			printf(" %d \n",getSize(temp));
 		}
 	}
 	free(temp);
@@ -121,11 +124,27 @@ char *getUserName(char *dir_name)
 		return "lstat error"; 
 	}
 	struct passwd *conversion = getpwuid(file.st_uid);
-	char* temp = conversion->pw_name;
+	char *temp = conversion->pw_name;
 	//printf(" %s ",temp);
 	return temp;
 } 
 char *getGroupName(char *dir_name)
 {
-	
+	struct stat file;
+	if (lstat(dir_name, &file) < 0){
+		perror("lstat error");
+		return "lstat error"; 
+	}
+	struct group *conversion = getgrgid(file.st_gid);
+	char *temp = conversion->gr_name;
+	return temp;
+}
+
+int getSize(char *dir_name)
+{
+	struct stat file;
+	if (lstat(dir_name, &file) < 0){
+		perror("lstat error");
+	}
+	return file.st_size;
 }
