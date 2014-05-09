@@ -11,6 +11,7 @@
 
 #define STRLEN1 128
 #define STRLEN2 64
+#define MAX_BUFFER_SIZE 255
 
 void process(const char *dir_name, const char *type);
 void fperm(char *dir_name);
@@ -19,6 +20,7 @@ char *getUserName(char *dir_name);
 char *getGroupName(char *dir_name);
 int getSize(char *dir_name);
 void getTime(char *dir_name, const char *type);
+char *getSymLinkName(const char *dir_name, const char *path_name);
 
 int main (int argc, char *argv[]) 
 {
@@ -48,7 +50,8 @@ void process(const char *dir_name, const char *type)
 		printf("opendir(%s) failed\n",dir_name);
 		return;
 	}
-
+	int BUF_SIZE = sizeof(dir_name);
+	int counter = 1;
 	while ((p_dirent = readdir(p_dir)) != NULL) {
 		char *str_path = p_dirent->d_name;	// relative path name!
 
@@ -56,7 +59,7 @@ void process(const char *dir_name, const char *type)
 			printf("Null pointer found!"); 
 			return;
 		} else {
-			temp = (char *) malloc(strlen(dir_name));
+			temp = (char *) malloc(BUF_SIZE + BUF_SIZE*counter);
 			strcat(temp, dir_name);
 			strcat(temp, str_path);
 			char *type = ftype(temp);
@@ -66,8 +69,15 @@ void process(const char *dir_name, const char *type)
 			printf("\t %s ",getGroupName(temp));
 			printf("\t %d ",getSize(temp));
 			getTime(temp,type);
-			printf("\t %s \n",str_path);
+			if (!strcmp(&type[0],"l")) {
+				printf("%s->%s\n",str_path,getSymLinkName(dir_name,temp));
+			}
+			else {
+				printf("%s\n",str_path);
+			}			
+			counter ++;
 		}
+
 	}
 	free(temp);
 	return;
@@ -103,9 +113,8 @@ char *ftype(char *dir_name)
 
 	if (lstat(dir_name, &buf) < 0) {
 		perror("lstat error");
-		return "lstat error";
+		return "error";
 	}
-
 	if (S_ISDIR(buf.st_mode))  		ptr = "d";
 	else if (S_ISLNK(buf.st_mode))  ptr = "l";
 	else                            ptr = "-";
@@ -117,7 +126,7 @@ char *getUserName(char *dir_name)
 	struct stat file;
 	if (lstat(dir_name, &file) < 0){
 		perror("lstat error");
-		return "lstat error"; 
+		return "error"; 
 	}
 	struct passwd *conversion = getpwuid(file.st_uid);
 	char *temp = conversion->pw_name;
@@ -130,7 +139,7 @@ char *getGroupName(char *dir_name)
 	struct stat file;
 	if (lstat(dir_name, &file) < 0){
 		perror("lstat error");
-		return "lstat error"; 
+		return "error"; 
 	}
 	struct group *conversion = getgrgid(file.st_gid);
 	char *temp = conversion->gr_name;
@@ -141,7 +150,7 @@ int getSize(char *dir_name)
 {
 	struct stat file;
 	if (lstat(dir_name, &file) < 0){
-		perror("lstat error");
+		perror("error");
 	}
 	return file.st_size;
 }
@@ -163,4 +172,14 @@ void getTime(char *dir_name, const char *type)
 	strftime(buffer,80,"%a %b %d %Y %I:%M",timeinfo);
 	printf("\t %s ",buffer);
 	return;
+}
+char *getSymLinkName(const char *dir_name, const char *path_name) 
+{
+	static char buffer[MAX_BUFFER_SIZE];
+	ssize_t len;
+	if ((len = readlink(path_name, buffer, MAX_BUFFER_SIZE-1)) != -1)
+	{
+		buffer[len] = '\0';
+	}
+	return buffer;
 }
