@@ -14,10 +14,10 @@
 #define MAX_BUFFER_SIZE 255
 
 void process(const char *dir_name, const char *type);
-void fperm(char *dir_name);
-char *ftype(char *dir_name);
-char *getUserName(char *dir_name);
-char *getGroupName(char *dir_name);
+void fperm(const char *dir_name);
+void ftype(const char *dir_name, char **type);
+void getUserName(const char * dir_name);
+void getGroupName(const char *dir_name);
 int getSize(char *dir_name);
 void getTime(char *dir_name, const char *type);
 char *getSymLinkName(const char *dir_name, const char *path_name);
@@ -36,54 +36,75 @@ int main (int argc, char *argv[])
 		return 0; 
 	}
 	char *type = argv[1];
+	printf("%s\n",argv[2]);
 	process(argv[2], type);
-
 	return 0; 
 }
 
-void process(const char *dir_name, const char *type)
+void process(const char *dir_name, const char *parameter)
 {
+
 	DIR *p_dir;
-	char *temp;
+	char *type = malloc(sizeof(char));
+	char *str_path = malloc(sizeof(char));
 	struct dirent *p_dirent;
+	
 	if ((p_dir = opendir(dir_name)) == NULL) {
 		printf("opendir(%s) failed\n",dir_name);
-		return;
+		exit(1);
 	}
+	
 	int BUF_SIZE = sizeof(dir_name);
+	int STR_PATH_SIZE;
 	int counter = 1;
-	while ((p_dirent = readdir(p_dir)) != NULL) {
-		char *str_path = p_dirent->d_name;	// relative path name!
 
+	while ((p_dirent = readdir(p_dir)) != NULL) {
+		
+		str_path = p_dirent->d_name;	// relative path name!
+		STR_PATH_SIZE = sizeof(str_path);
+		
 		if (str_path == NULL) {
 			printf("Null pointer found!"); 
-			return;
-		} else {
-			temp = (char *) malloc(BUF_SIZE + BUF_SIZE*counter);
+			exit(1);
+		} 
+
+		else {
+			
+			char *temp = malloc(BUF_SIZE + STR_PATH_SIZE + 1);
 			strcat(temp, dir_name);
 			strcat(temp, str_path);
-			char *type = ftype(temp);
-			printf("%c",type[0]);
+			//printf("TEMP\n");
+			ftype(temp, &type);
+			
+			printf("%s",type);
+			
 			fperm(temp);
-			printf("\t %s ",getUserName(temp));
-			printf("\t %s ",getGroupName(temp));
-			printf("\t %d ",getSize(temp));
-			getTime(temp,type);
+
+			getUserName(temp);
+			getGroupName(temp);
+			printf("t %d ",getSize(temp));
+			
+			getTime(temp,parameter);
+			
 			if (!strcmp(&type[0],"l")) {
 				printf("%s->%s\n",str_path,getSymLinkName(dir_name,temp));
 			}
+			
 			else {
 				printf("%s\n",str_path);
 			}			
+			
 			counter ++;
+			temp[0] = '\0';
+			free(temp);
 		}
-
 	}
-	free(temp);
+	free(p_dirent);
+	closedir(p_dir);
 	return;
 }
 
-void fperm(char *dir_name) 
+void fperm(const char *dir_name) 
 {
 	char str[] = "---------\0";
 	struct stat buf;
@@ -91,7 +112,7 @@ void fperm(char *dir_name)
 	//printf("Owner permission of %s: ", dir_name);
 	if (lstat(dir_name, &buf) < 0) {
 		perror("lstat error");
-		return;
+		exit(1);
 	}   
 
 	mode_t mode = buf.st_mode;
@@ -106,51 +127,68 @@ void fperm(char *dir_name)
 	printf("%s", str);
 }
 
-char *ftype(char *dir_name)
+void ftype(const char *dir_name, char **type)
 {
-	char *ptr;
 	struct stat buf;
-
 	if (lstat(dir_name, &buf) < 0) {
 		perror("lstat error");
-		return "error";
+		exit(1);
 	}
-	if (S_ISDIR(buf.st_mode))  		ptr = "d";
-	else if (S_ISLNK(buf.st_mode))  ptr = "l";
-	else                            ptr = "-";
-	return ptr;
+	if (S_ISDIR(buf.st_mode))  		*type = "d";
+	else if (S_ISLNK(buf.st_mode))  *type = "l";
+	else                            *type = "-";
+	return;
 }
 
-char *getUserName(char *dir_name)
+void getUserName(const char *dir_name)
 {
 	struct stat file;
+	char * copy = malloc(strlen(dir_name) + 1);
+	strcpy(copy, dir_name);
+	printf("Copy: %s\n",copy );
 	if (lstat(dir_name, &file) < 0){
 		perror("lstat error");
-		return "error"; 
+		exit(1); 
 	}
-	struct passwd *conversion = getpwuid(file.st_uid);
-	char *temp = conversion->pw_name;
-	//printf(" %s ",temp);
-	return temp;
+
+	struct passwd *pwd;
+
+	int userID = file.st_uid;
+	printf("\n%s\n",dir_name );
+	pwd = getpwuid(userID);
+	printf("%s\n",dir_name);
+	printf("\t %s ",pwd->pw_name);
+	free(copy);
+	return;
 } 
 
-char *getGroupName(char *dir_name)
+void getGroupName(const char *dir_name)
 {
 	struct stat file;
-	if (lstat(dir_name, &file) < 0){
+	
+	if (lstat((const char *) dir_name, &file) < 0){
 		perror("lstat error");
-		return "error"; 
+		exit(1);
 	}
+	
 	struct group *conversion = getgrgid(file.st_gid);
-	char *temp = conversion->gr_name;
-	return temp;
+	
+	if (!conversion) {
+		printf("Error getting username from directory: %s\n", dir_name);
+		exit(1);
+	
+	}
+	printf("\t %s ",conversion->gr_name);
+	return;
 }
 
 int getSize(char *dir_name)
 {
 	struct stat file;
 	if (lstat(dir_name, &file) < 0){
-		perror("error");
+		perror("lstat error");
+		printf("TEMP\n");
+		exit(1);
 	}
 	return file.st_size;
 }
@@ -162,7 +200,7 @@ void getTime(char *dir_name, const char *type)
 	char buffer[256];
 	if (lstat(dir_name, &file) < 0){
 		perror("lstat error");
-		return;
+		exit(1);
 	}
 	if 		(!strcmp(&type[1],"l"))	timeinfo = localtime(&file.st_mtime);
 	else if (!strcmp(&type[1],"u")) timeinfo = localtime(&file.st_atime);
