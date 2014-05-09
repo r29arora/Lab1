@@ -73,7 +73,6 @@ void process(const char *dir_name, const char *parameter)
 			char *temp = malloc(BUF_SIZE + STR_PATH_SIZE + 1);
 			strcat(temp, dir_name);
 			strcat(temp, str_path);
-			//printf("TEMP\n");
 			ftype(temp, &type);
 			
 			printf("%s",type);
@@ -82,7 +81,7 @@ void process(const char *dir_name, const char *parameter)
 
 			getUserName(temp);
 			getGroupName(temp);
-			printf("t %d ",getSize(temp));
+			printf("\t%d\t",getSize(temp));
 			
 			getTime(temp,parameter);
 			
@@ -143,9 +142,6 @@ void ftype(const char *dir_name, char **type)
 void getUserName(const char *dir_name)
 {
 	struct stat file;
-	char * copy = malloc(strlen(dir_name) + 1);
-	strcpy(copy, dir_name);
-	printf("Copy: %s\n",copy );
 	if (lstat(dir_name, &file) < 0){
 		perror("lstat error");
 		exit(1); 
@@ -154,11 +150,8 @@ void getUserName(const char *dir_name)
 	struct passwd *pwd;
 
 	int userID = file.st_uid;
-	printf("\n%s\n",dir_name );
 	pwd = getpwuid(userID);
-	printf("%s\n",dir_name);
-	printf("\t %s ",pwd->pw_name);
-	free(copy);
+	printf("\t%s",pwd->pw_name);
 	return;
 } 
 
@@ -187,7 +180,6 @@ int getSize(char *dir_name)
 	struct stat file;
 	if (lstat(dir_name, &file) < 0){
 		perror("lstat error");
-		printf("TEMP\n");
 		exit(1);
 	}
 	return file.st_size;
