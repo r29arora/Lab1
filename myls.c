@@ -77,11 +77,8 @@ void process(const char *dir_name, const char *parameter)
 			printf("%s",type);
 			
 			fperm(temp);
-			printf("\nDIRNAME: %s\n",temp);
 			getUserName(temp);
-			printf("\nDIRNAME: %s\n",temp);
 			getGroupName(temp);
-			printf("\nDIRNAME: %s\n",dir_name );
 			printf("\t%d\t",getSize(temp));
 			
 			getTime(temp,parameter);
@@ -111,6 +108,7 @@ void fperm(const char *dir_name)
 	
 	if (lstat(dir_name, &buf) < 0) {
 		perror("lstat error");
+		printf("\nlstat error with dir_name: %s\n",dir_name );
 		exit(1);
 	}   
 
@@ -131,6 +129,7 @@ void ftype(const char *dir_name, char **type)
 	struct stat buf;
 	if (lstat(dir_name, &buf) < 0) {
 		perror("lstat error");
+		printf("\nlstat error with dir_name: %s\n",dir_name );
 		exit(1);
 	}
 	if (S_ISDIR(buf.st_mode))  		*type = "d";
@@ -144,6 +143,7 @@ void getUserName(const char *dir_name)
 	struct stat file;
 	if (lstat(dir_name, &file) < 0){
 		perror("lstat error");
+		printf("\nlstat error with dir_name: %s\n",dir_name );
 		exit(1); 
 	}
 
@@ -161,6 +161,7 @@ void getGroupName(const char *dir_name)
 	
 	if (lstat((const char *) dir_name, &file) < 0){
 		perror("lstat error");
+		printf("\nlstat error with dir_name: %s\n",dir_name );
 		exit(1);
 	}
 	
@@ -180,6 +181,7 @@ int getSize(char *dir_name)
 	struct stat file;
 	if (lstat(dir_name, &file) < 0){
 		perror("lstat error");
+		printf("\nlstat error with dir_name: %s\n",dir_name );
 		exit(1);
 	}
 	return file.st_size;
@@ -192,6 +194,7 @@ void getTime(char *dir_name, const char *type)
 	char buffer[256];
 	if (lstat(dir_name, &file) < 0){
 		perror("lstat error");
+		printf("\nlstat error with dir_name: %s\n",dir_name );
 		exit(1);
 	}
 	if 		(!strcmp(&type[1],"l"))	timeinfo = localtime(&file.st_mtime);
