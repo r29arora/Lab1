@@ -11,7 +11,7 @@
 
 #define STRLEN1 128
 #define STRLEN2 64
-#define MAX_BUFFER_SIZE 255
+#define MAX_BUFFER_SIZE 256
 
 void printTypeandPermissions(struct stat buf, char *filetype);
 void printUsernameandGroupName(struct stat buf);
@@ -62,6 +62,7 @@ int main (int argc, char *argv[])
 		printTime(buf,flag);
 		free(full_path_name);
 		printf("\t%s",file_name);
+
 		if (filetype == 'l'){
 			static char sym_link_name[MAX_BUFFER_SIZE];
 			ssize_t len;
