@@ -112,7 +112,7 @@ void printUsernameandGroupName(struct stat buf)
 
 void printSize(struct stat buf)
 {
-	printf("\t%lld",buf.st_size);
+	printf("\t%ld",(long)buf.st_size);
 	return;
 }
 void printTime(struct stat buf, char *flagtype)
