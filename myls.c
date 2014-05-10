@@ -78,12 +78,9 @@ void process(const char *dir_name, const char *parameter)
 			printf("%s",type);
 			
 			fperm(temp);
-			char *newTemp = malloc(BUF_SIZE + STR_PATH_SIZE +1);
-			newTemp[0] = '\0';
 			strcat(newTemp, temp);
 			getUserName(temp);
-			getGroupName(newTemp);
-			free(newTemp);
+			getGroupName(temp);
 			printf("\t%d\t",getSize(temp));
 			
 			getTime(temp,parameter);
