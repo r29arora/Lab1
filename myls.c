@@ -69,8 +69,12 @@ int main (int argc, char *argv[])
 			if ((len = readlink(full_path_name, sym_link_name, MAX_BUFFER_SIZE-1)) != -1)
 			{
 				sym_link_name[len] = '\0';
+				printf("->%s",sym_link_name);
 			}
-			printf("->%s",sym_link_name);
+			else {
+				printf("readlink(%s) failed\n",full_path_name);
+			}
+			
 		}
 		printf("\n");
 
