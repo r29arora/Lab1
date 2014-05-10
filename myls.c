@@ -69,7 +69,7 @@ void process(const char *dir_name, const char *parameter)
 
 		else {
 			
-			char *temp = malloc(BUF_SIZE + STR_PATH_SIZE + 1);
+			char *temp = malloc(BUF_SIZE + STR_PATH_SIZE*counter);
 			strcat(temp, dir_name);
 			strcat(temp, str_path);
 			ftype(temp, &type);
