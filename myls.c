@@ -60,7 +60,6 @@ int main (int argc, char *argv[])
 		printUsernameandGroupName(buf);
 		printSize(buf);
 		printTime(buf,flag);
-		free(full_path_name);
 		printf("\t%s",file_name);
 
 		if (filetype == 'l'){
@@ -76,6 +75,8 @@ int main (int argc, char *argv[])
 			}
 			
 		}
+		free(full_path_name);
+
 		printf("\n");
 
 	}
