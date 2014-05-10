@@ -69,7 +69,7 @@ void process(const char *dir_name, const char *parameter)
 
 		else {
 			
-			char *temp = malloc(BUF_SIZE + STR_PATH_SIZE*counter);
+			char* temp = malloc(BUF_SIZE + STR_PATH_SIZE*counter);
 			strcat(temp, dir_name);
 			strcat(temp, str_path);
 			ftype(temp, &type);
@@ -77,9 +77,11 @@ void process(const char *dir_name, const char *parameter)
 			printf("%s",type);
 			
 			fperm(temp);
-
+			printf("\nDIRNAME: %s\n",temp);
 			getUserName(temp);
+			printf("\nDIRNAME: %s\n",temp);
 			getGroupName(temp);
+			printf("\nDIRNAME: %s\n",dir_name );
 			printf("\t%d\t",getSize(temp));
 			
 			getTime(temp,parameter);
@@ -107,7 +109,6 @@ void fperm(const char *dir_name)
 	char str[] = "---------\0";
 	struct stat buf;
 	
-	//printf("Owner permission of %s: ", dir_name);
 	if (lstat(dir_name, &buf) < 0) {
 		perror("lstat error");
 		exit(1);
