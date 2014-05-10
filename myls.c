@@ -60,7 +60,7 @@ int main (int argc, char *argv[])
 		printUsernameandGroupName(buf);
 		printSize(buf);
 		printTime(buf,flag);
-		printf("\t%s",file_name);
+		printf("%s",file_name);
 
 		if (filetype == 'l'){
 			static char sym_link_name[MAX_BUFFER_SIZE];
