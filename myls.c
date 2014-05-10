@@ -1,3 +1,20 @@
+/* --------------------------------------------------------------------------
+ECE 254: Lab 1: Simple ls function 
+
+Group Memebers: Rajul Arora & Gautham Kamath
+StudentID: 20463068 & 
+QuestID: r9arora &
+
+Steps to Use: 
+1. make clean
+2. make
+3 ./myls <flag> <directory>
+
+Flags:
+-l -> Last Modified Date
+-u -> Last Access Date
+-c -> Last Change Date
+-------------------------------------------------------------------------- */
 #include <sys/types.h>
 #include <dirent.h>
 #include <sys/stat.h>
@@ -48,6 +65,10 @@ int main (int argc, char *argv[])
 		}
 		
 		char *full_path_name = malloc(strlen(parent_dir_name) + strlen(file_name) + 2);
+		if (!full_path_name){
+			perror("malloc error");
+			exit(1);
+		}
 		char filetype = '-';
 		strcpy(full_path_name,parent_dir_name);
 		strcat(full_path_name,file_name);
@@ -144,18 +165,3 @@ void printTime(struct stat buf, char *flagtype)
 	printf("\t %s ",buffer);
 	return;
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
