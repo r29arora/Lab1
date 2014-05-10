@@ -55,9 +55,8 @@ void process(const char *dir_name, const char *parameter)
 	}
 	
 	int BUF_SIZE = sizeof(dir_name);
-	int STR_PATH_SIZE = 0;
+	int STR_PATH_SIZE;
 	int counter = 1;
-	char *temp = malloc(BUF_SIZE + STR_PATH_SIZE + 1);
 	while ((p_dirent = readdir(p_dir)) != NULL) {
 		
 		str_path = p_dirent->d_name;	// relative path name!
@@ -70,7 +69,7 @@ void process(const char *dir_name, const char *parameter)
 
 		else {
 			
-			temp = malloc(BUF_SIZE + STR_PATH_SIZE + 1);
+			char *temp = malloc(BUF_SIZE + STR_PATH_SIZE + 1);
 			strcat(temp, dir_name);
 			strcat(temp, str_path);
 			ftype(temp, &type);
