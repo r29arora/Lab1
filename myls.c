@@ -78,7 +78,6 @@ void process(const char *dir_name, const char *parameter)
 			printf("%s",type);
 			
 			fperm(temp);
-			strcat(newTemp, temp);
 			getUserName(temp);
 			getGroupName(temp);
 			printf("\t%d\t",getSize(temp));
