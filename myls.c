@@ -138,7 +138,7 @@ void printTime(struct stat buf, char *flagtype)
 		timeinfo = localtime(&buf.st_mtime);
 	}
 
-	strftime(buffer,80,"%a %b %d %Y %I:%M",timeinfo);
+	strftime(buffer,80,"%b  %d  %I:%M",timeinfo);
 	printf("\t %s ",buffer);
 	return;
 }
