@@ -80,6 +80,8 @@ int main (int argc, char *argv[])
 		printf("\n");
 
 	}
+	free(p_dirent);
+	closedir(p_dir);
 	exit(0);
 }
 
