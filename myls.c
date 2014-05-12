@@ -42,8 +42,15 @@ int main (int argc, char *argv[])
 		printf("Usage:./myls <arguments> <directory> \n");
 		exit(1);
 	}
-	
+
 	char *flag = argv[1];
+	char flagtype = flag[1];
+
+	if (flagtype != 'l' && flagtype != 'u' && flagtype != 'c'){
+		printf("%c is not a proper flag. Use -l, -u, or -c\n",flagtype);
+		exit(1);
+	}
+
 	const char *parent_dir_name = argv[2];
 	struct stat buf;
 
@@ -141,6 +148,9 @@ void printTypeandPermissions(struct stat buf, char *filetype)
 	str[3] = (mode & S_IRGRP) ? 'r' : '-';
 	str[4] = (mode & S_IWGRP) ? 'w' : '-';
 	str[5] = (mode & S_IXGRP) ? 'x' : '-';
+	str[6] = (mode & S_IROTH) ? 'r' : '-';
+	str[7] = (mode & S_IWOTH) ? 'w' : '-';
+	str[8] = (mode & S_IXOTH) ? 'x' : '-';
 
 	printf("%c%s",*filetype,str);
 	return;
@@ -182,8 +192,7 @@ void printTime(struct stat buf, char *flagtype)
 		timeinfo = localtime(&buf.st_ctime);
 	}
 	else {
-		printf("Error: innapropriate flag\n");
-		exit(1);		
+		timeinfo = localtime(&buf.st_mtime);		
 	}
 
 	strftime(buffer,80,"%b  %d  %I:%M",timeinfo);
