@@ -2,8 +2,8 @@
 ECE 254: Lab 1: Simple ls function 
 
 Group Memebers: Rajul Arora & Gautham Kamath
-StudentID: 20463068 & 
-QuestID: r9arora &
+StudentID: 20463068 & 20465557
+QuestID: r9arora & ggkamath
 
 Steps to Use: 
 1. make clean
